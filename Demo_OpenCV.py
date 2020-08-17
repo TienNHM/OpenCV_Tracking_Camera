@@ -2,7 +2,6 @@ import cv2
 import numpy as np
 import imutils
 
-
 OPENCV_OBJECT_TRACKERS = {
     "csrt": cv2.TrackerCSRT_create,
     "kcf": cv2.TrackerKCF_create,
@@ -13,7 +12,7 @@ OPENCV_OBJECT_TRACKERS = {
     "mosse": cv2.TrackerMOSSE_create
 }
 
-OBJ_TRACKER = "medianflow"
+OBJ_TRACKER = "csrt"
 tracker = OPENCV_OBJECT_TRACKERS[OBJ_TRACKER]() 
 initBB = None
 
@@ -41,18 +40,17 @@ while True:
     if initBB is not None:
         (success, box) = tracker.update(frame)
         if success:
-            # pre_id = id
+            pre_id = id
             (x, y, w, h) = [int(v) for v in box]
             cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
             cv2.circle(frame, (x + w//2,y + h//2), 1, (255, 0, 0), -1)
             tracking_obj.append([x + w//2, y + h//2])
-    #    else:
-    #        if id - pre_id > 40: 
-    #            # tracking_obj = []
-    #            do=True
+        else:
+            tracking_obj = []
+            #if id - pre_id > 40: 
+            #    tracking_obj = []
 
     #print(pre_id-id)
-
 
     cv2.imshow("Frame", frame)
     key = cv2.waitKey(1) & 0xFF
@@ -60,12 +58,13 @@ while True:
     if key == ord("s"):
         initBB = cv2.selectROI("Frame", frame, fromCenter=False, showCrosshair=True)
         tracker = OPENCV_OBJECT_TRACKERS[OBJ_TRACKER]() 
-        tracker.init(frame, initBB)
-        tracking_obj = []
+        if initBB != (0,0,0,0):
+            tracker.init(frame, initBB)
+            tracking_obj = []
+
     elif key == ord("q"):
         break
     
     #vs.release()
     
 cv2.destroyAllWindows()
-
