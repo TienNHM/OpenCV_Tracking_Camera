@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import imutils
+from collections import deque 
 
 OPENCV_OBJECT_TRACKERS = {
     "csrt": cv2.TrackerCSRT_create,
@@ -19,7 +20,7 @@ initBB = None
 # vs = cv2.VideoCapture(r"C:\Users\Minh Tien\Desktop\demo_yolov4.mp4")
 vs = cv2.VideoCapture(0) 
 
-tracking_obj = []
+tracking_obj = deque(maxlen = 64)
 id = 0
 pre_id = 0
 
